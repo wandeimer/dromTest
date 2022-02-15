@@ -26,13 +26,15 @@ class ViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let screenSize: CGRect = UIScreen.main.bounds
+        // set item size from screen width independent of orientation
+        let itemSize = screenSize.height > screenSize.width ? screenSize.width - 20 : screenSize.height - 20
         let view = UIView()
         view.backgroundColor = .white
         
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
-        layout.itemSize = CGSize(width: screenSize.width-20, height: screenSize.width-20)
+        layout.itemSize = CGSize(width: itemSize, height: itemSize)
         
         refreshControl.addTarget(self, action: #selector(refreshListObjc(_:)), for: .valueChanged)
         
