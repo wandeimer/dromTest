@@ -23,13 +23,13 @@ class ViewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        let screenSize: CGRect = UIScreen.main.bounds
         let view = UIView()
         view.backgroundColor = .white
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
-        layout.itemSize = CGSize(width: 300, height: 300)
+        layout.itemSize = CGSize(width: screenSize.width-20, height: screenSize.width-20)
         
         myCollectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
         myCollectionView?.dataSource = self
