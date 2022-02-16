@@ -7,22 +7,12 @@
 
 import UIKit
 
-//class ViewController: UIViewController {
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        view.backgroundColor = .white
-//
-//
-//    }
-//
-//}
-
 class ViewController : UIViewController {
     private var myCollectionView:UICollectionView?
     private let refreshControl = UIRefreshControl()
     private var itemColor = UIColor.blue // color items while image is not loaded
-    private var linkList : LinkList?
+    private var linkListObject = LinkList()
+    private var linkList : [String] = []
     private var itemSize : Double? // size of image(without edge insets)
     let networker = NetworkManager.networkManager
     
@@ -35,7 +25,7 @@ class ViewController : UIViewController {
         let screenSize: CGRect = UIScreen.main.bounds
         itemSize = screenSize.height > screenSize.width ? screenSize.width - 20 : screenSize.height - 20
         
-        linkList = LinkList() // load list of image link
+        linkList = linkListObject.linkList // load list of image link
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10) // edge insets of Collection View
@@ -65,6 +55,7 @@ class ViewController : UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // add delay
             // change item fill color(while has no image)
             self.itemColor = (self.itemColor == UIColor.blue) ? UIColor.red : UIColor.blue
+            self.linkList = self.linkListObject.linkList
             
             // refresh Collection View
             self.myCollectionView?.reloadData()
@@ -73,6 +64,24 @@ class ViewController : UIViewController {
             self.refreshControl.endRefreshing()
         }
     }
+    
+    // change orientation
+//    override func viewWillLayoutSubviews() {
+//      super.viewWillLayoutSubviews()
+//
+//
+//      guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else {
+//        return
+//      }
+//
+//        if UIApplication.shared.statusBarOrientation.isLandscape {
+//        //here you can do the logic for the cell size if phone is in landscape
+//      } else {
+//        //logic if not landscape
+//      }
+//
+//      flowLayout.invalidateLayout()
+//    }
 }
 
 
@@ -80,7 +89,7 @@ class ViewController : UIViewController {
 extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let countOfCell : Int = self.linkList?.linkList.count ?? 0
+        let countOfCell : Int = self.linkList.count
         return countOfCell
     }
     
@@ -90,7 +99,7 @@ extension ViewController: UICollectionViewDataSource {
         myCell.color = self.itemColor
         
         // setting an identifier for a cell so that only the image that corresponds to it gets into the cell
-        let representedIdentifier = self.linkList!.linkList[indexPath.item]
+        let representedIdentifier = self.linkList[indexPath.item]
         myCell.representedIdentifier = representedIdentifier
         
         // check "data received". if not - return an empty UIImage
@@ -102,8 +111,8 @@ extension ViewController: UICollectionViewDataSource {
         }
         
         // load image data from url and set image to myCell
-        if (self.linkList != nil){
-            let url = URL(string: self.linkList!.linkList[indexPath.item])!
+        if (self.linkList != []){
+            let url = URL(string: self.linkList[indexPath.item])!
             networker.download(imageURL: url) { data, error  in
               let img = image(data: data)
               DispatchQueue.main.async {
@@ -119,7 +128,9 @@ extension ViewController: UICollectionViewDataSource {
 
 extension ViewController: UICollectionViewDelegate {
  
+    // delete item
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       print("User tapped on item \(indexPath.row)")
+        self.linkList.remove(at: indexPath.item)
+        collectionView.reloadData()
     }
 }
