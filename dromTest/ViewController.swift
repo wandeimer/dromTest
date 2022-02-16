@@ -22,19 +22,22 @@ class ViewController : UIViewController {
     private var myCollectionView:UICollectionView?
     private let refreshControl = UIRefreshControl()
     private var itemColor = UIColor.blue
+    private var linkList : LinkList?
+    private var itemSize : Double?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         let screenSize: CGRect = UIScreen.main.bounds
         // set item size from screen width independent of orientation
-        let itemSize = screenSize.height > screenSize.width ? screenSize.width - 20 : screenSize.height - 20
+        itemSize = screenSize.height > screenSize.width ? screenSize.width - 20 : screenSize.height - 20
         let view = UIView()
         view.backgroundColor = .white
         
+        linkList = LinkList()
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
-        layout.itemSize = CGSize(width: itemSize, height: itemSize)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        layout.itemSize = CGSize(width: itemSize ?? 0.0, height: itemSize ?? 0.0)
         
         refreshControl.addTarget(self, action: #selector(refreshListObjc(_:)), for: .valueChanged)
         
@@ -43,7 +46,7 @@ class ViewController : UIViewController {
         myCollectionView?.delegate = self
         myCollectionView?.refreshControl = refreshControl
 
-        myCollectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "MyCell")
+        myCollectionView?.register(ImageCellCollectionViewCell.self, forCellWithReuseIdentifier: "MyCell")
         myCollectionView?.backgroundColor = UIColor.white
         
         
@@ -71,13 +74,15 @@ class ViewController : UIViewController {
 
 
 extension ViewController: UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 6
+        let countOfCell : Int = self.linkList?.linkList.count ?? 0
+        return countOfCell
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let myCell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath)
-        myCell.backgroundColor = itemColor
+        let myCell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath) as! ImageCellCollectionViewCell
+        myCell.color = self.itemColor
         return myCell
     }
 }
