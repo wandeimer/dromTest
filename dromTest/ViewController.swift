@@ -20,30 +20,35 @@ class ViewController : UIViewController {
         super.viewDidLoad()
         let view = UIView()
         view.backgroundColor = .white
+        linkList = linkListObject.linkList // load list of image link
+        
+        refreshControl.addTarget(self, action: #selector(refreshListObjc(_:)), for: .valueChanged)
         
         // get item size from screen width independent of orientation
         let screenSize: CGRect = UIScreen.main.bounds
         itemSize = screenSize.height > screenSize.width ? screenSize.width - 20 : screenSize.height - 20
         
-        linkList = linkListObject.linkList // load list of image link
-        
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10) // edge insets of Collection View
-        layout.itemSize = CGSize(width: itemSize ?? 0.0, height: itemSize ?? 0.0) // set size of item (include edge insets)
-        
-        refreshControl.addTarget(self, action: #selector(refreshListObjc(_:)), for: .valueChanged)
-        
-        myCollectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
+        // MARK: init collectionView
+        myCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout.init())
+        addEdgeInsetsToCollectionView()
         myCollectionView?.dataSource = self
         myCollectionView?.delegate = self
         myCollectionView?.refreshControl = refreshControl
-
         myCollectionView?.register(ImageCellCollectionViewCell.self, forCellWithReuseIdentifier: "MyCell")
         myCollectionView?.backgroundColor = UIColor.white
         
         
-
-        view.addSubview(myCollectionView ?? UICollectionView())
+        // MARK: place collectionView
+        view.addSubview(myCollectionView!)
+        self.myCollectionView!.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            myCollectionView!.topAnchor.constraint(equalTo: view.topAnchor),
+            myCollectionView!.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            myCollectionView!.leftAnchor.constraint(equalTo: view.leftAnchor),
+            myCollectionView!.rightAnchor.constraint(equalTo: view.rightAnchor)
+            ])
+        
         self.view = view
     }
     
@@ -51,12 +56,11 @@ class ViewController : UIViewController {
         refreshList()
     }
     
+    // MARK: refresh list
     private func refreshList(){
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // add delay
-            // change item fill color(while has no image)
-            self.itemColor = (self.itemColor == UIColor.blue) ? UIColor.red : UIColor.blue
-            self.linkList = self.linkListObject.linkList
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // add delay
             
+            self.linkList = self.linkListObject.linkList
             // refresh Collection View
             self.myCollectionView?.reloadData()
             
@@ -65,23 +69,23 @@ class ViewController : UIViewController {
         }
     }
     
-    // change orientation
-//    override func viewWillLayoutSubviews() {
-//      super.viewWillLayoutSubviews()
-//
-//
-//      guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else {
-//        return
-//      }
-//
-//        if UIApplication.shared.statusBarOrientation.isLandscape {
-//        //here you can do the logic for the cell size if phone is in landscape
-//      } else {
-//        //logic if not landscape
-//      }
-//
-//      flowLayout.invalidateLayout()
-//    }
+    func addEdgeInsetsToCollectionView(){
+        // MARK: set item size
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: itemSize!, height: itemSize!) // set size of item (include edge insets)
+
+        myCollectionView?.setCollectionViewLayout(layout, animated: true)
+    }
+
+    // MARK: get insets to place image to center
+    func getSidesInsets(cellWidth: Double, numberOfItems: Double, spaceBetweenCell: Double, collectionView: UICollectionView) -> UIEdgeInsets {
+        let totalWidth = cellWidth * numberOfItems
+        let totalSpacingWidth = spaceBetweenCell * (numberOfItems - 1)
+        let leftInset = (collectionView.frame.width - CGFloat(totalWidth + totalSpacingWidth)) / 2
+        let rightInset = leftInset
+        return UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: rightInset)
+    }
+    
 }
 
 
@@ -89,9 +93,9 @@ class ViewController : UIViewController {
 extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let countOfCell : Int = self.linkList.count
-        return countOfCell
+        return self.linkList.count
     }
+    
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let myCell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath) as! ImageCellCollectionViewCell
@@ -102,7 +106,8 @@ extension ViewController: UICollectionViewDataSource {
         let representedIdentifier = self.linkList[indexPath.item]
         myCell.representedIdentifier = representedIdentifier
         
-        // check "data received". if not - return an empty UIImage
+        // MARK: check "data received".
+        // if not - return an empty UIImage
         func image(data: Data?) -> UIImage? {
           if let data = data {
             return UIImage(data: data)
@@ -110,13 +115,13 @@ extension ViewController: UICollectionViewDataSource {
           return UIImage()
         }
         
-        // load image data from url and set image to myCell
+        // MARK: load image data from url and set image to myCell
         if (self.linkList != []){
             let url = URL(string: self.linkList[indexPath.item])!
             networker.download(imageURL: url) { data, error  in
               let img = image(data: data)
               DispatchQueue.main.async {
-                if (myCell.representedIdentifier == representedIdentifier) {
+                if (myCell.representedIdentifier == representedIdentifier) { // check "is loaded image need to this cell"
                         myCell.image = img
                 }
               }
@@ -127,10 +132,34 @@ extension ViewController: UICollectionViewDataSource {
 }
 
 extension ViewController: UICollectionViewDelegate {
- 
-    // delete item
+    // MARK: delete item
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+//        let prevIndexPath = IndexPath(row: indexPath.item, section: indexPath.section)
+//        let previousCell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: prevIndexPath) as! ImageCellCollectionViewCell
+//        previousCell.animationDelete()
+        
         self.linkList.remove(at: indexPath.item)
+        collectionView.deleteItems(at: [indexPath])
         collectionView.reloadData()
     }
+}
+
+extension ViewController: UICollectionViewDelegateFlowLayout {
+    
+    // MARK: set image size
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: itemSize!, height: itemSize!)
+    }
+    
+    // MARK: set cell at center
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        let edgeInsets = getSidesInsets(cellWidth: itemSize!, numberOfItems: 1, spaceBetweenCell: 0, collectionView: myCollectionView!)
+        return UIEdgeInsets(top: 0, left: edgeInsets.left, bottom: 0, right: edgeInsets.right)
+        }
+
+    // MARK: set indent between cells
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+            return 10
+        }
 }

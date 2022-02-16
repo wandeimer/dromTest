@@ -22,6 +22,7 @@ class ImageCellCollectionViewCell: UICollectionViewCell {
       }
     }
     
+    
     var color: UIColor? {
         didSet {
             imageView.backgroundColor = color
@@ -38,6 +39,10 @@ class ImageCellCollectionViewCell: UICollectionViewCell {
         addSubview(imageView)
         imageView.widthAnchor.constraint(equalToConstant: itemSize).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: itemSize).isActive = true
+    }
+    
+    func animationDelete(){
+        imageView.widthAnchor.constraint(equalToConstant: 200).isActive = true
     }
     
     required init?(coder: NSCoder) {
