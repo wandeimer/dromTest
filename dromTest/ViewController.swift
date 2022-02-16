@@ -24,6 +24,7 @@ class ViewController : UIViewController {
     private var itemColor = UIColor.blue
     private var linkList : LinkList?
     private var itemSize : Double?
+    let networker = NetworkManager.networkManager
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,7 +83,29 @@ extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let myCell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath) as! ImageCellCollectionViewCell
+        
         myCell.color = self.itemColor
+        let representedIdentifier = self.linkList!.linkList[indexPath.item]
+        myCell.representedIdentifier = representedIdentifier
+        
+        func image(data: Data?) -> UIImage? {
+          if let data = data {
+            return UIImage(data: data)
+          }
+          return UIImage()
+        }
+        
+        if (self.linkList != nil){
+            let url = URL(string: self.linkList!.linkList[indexPath.item])!
+            networker.download(imageURL: url) { data, error  in
+              let img = image(data: data)
+              DispatchQueue.main.async {
+                if (myCell.representedIdentifier == representedIdentifier) {
+                    myCell.image = img
+                }
+              }
+            }
+        }
         return myCell
     }
 }

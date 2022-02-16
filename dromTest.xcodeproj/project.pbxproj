@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D946F83027BD0B27002387D6 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D946F82F27BD0B27002387D6 /* NetworkManager.swift */; };
 		D9BD7EF927BBECB5000B948C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD7EF827BBECB5000B948C /* AppDelegate.swift */; };
 		D9BD7F0227BBECB5000B948C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D9BD7F0127BBECB5000B948C /* Assets.xcassets */; };
 		D9BD7F0527BBECB5000B948C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D9BD7F0327BBECB5000B948C /* LaunchScreen.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D946F82F27BD0B27002387D6 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		D9BD7EF527BBECB5000B948C /* dromTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dromTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9BD7EF827BBECB5000B948C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D9BD7F0127BBECB5000B948C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -40,6 +42,7 @@
 		D9BD7EEC27BBECB4000B948C = {
 			isa = PBXGroup;
 			children = (
+				D946F82F27BD0B27002387D6 /* NetworkManager.swift */,
 				D9BD7EF727BBECB5000B948C /* dromTest */,
 				D9BD7EF627BBECB5000B948C /* Products */,
 			);
@@ -139,6 +142,7 @@
 			files = (
 				D9BD7F1127BCE28B000B948C /* ImageCellCollectionViewCell.swift in Sources */,
 				D9BD7F0D27BBF431000B948C /* ViewController.swift in Sources */,
+				D946F83027BD0B27002387D6 /* NetworkManager.swift in Sources */,
 				D9BD7EF927BBECB5000B948C /* AppDelegate.swift in Sources */,
 				D9BD7F1327BCE64F000B948C /* linkList.swift in Sources */,
 			);

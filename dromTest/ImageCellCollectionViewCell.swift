@@ -8,6 +8,8 @@
 import UIKit
 class ImageCellCollectionViewCell: UICollectionViewCell {
     
+    var representedIdentifier: String = ""
+    
     let imageView: UIImageView = {
             let imageView = UIImageView()
             imageView.translatesAutoresizingMaskIntoConstraints = false
