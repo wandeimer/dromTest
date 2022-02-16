@@ -8,6 +8,7 @@
 import UIKit
 class ImageCellCollectionViewCell: UICollectionViewCell {
     
+    // identifier for a cell so that only the image that corresponds to it gets into the cell
     var representedIdentifier: String = ""
     
     let imageView: UIImageView = {
@@ -35,7 +36,6 @@ class ImageCellCollectionViewCell: UICollectionViewCell {
         let itemSize = screenSize.height > screenSize.width ? screenSize.width - 20 : screenSize.height - 20
         
         addSubview(imageView)
-        imageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
         imageView.widthAnchor.constraint(equalToConstant: itemSize).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: itemSize).isActive = true
     }

@@ -25,8 +25,9 @@ class NetworkManager{
     }
     
     func download(imageURL: URL, completion: @escaping (Data?, Error?) -> (Void)) {
+        
+        // check "is we have cached image data for this url"
       if let imageData = images.object(forKey: imageURL.absoluteString as NSString) {
-        print("using cached images")
         completion(imageData as Data, nil)
         return
       }
@@ -49,6 +50,7 @@ class NetworkManager{
         
         do {
           let data = try Data(contentsOf: localUrl)
+            // add image to cache
           self.images.setObject(data as NSData, forKey: imageURL.absoluteString as NSString)
           completion(data, nil)
         } catch let error {
