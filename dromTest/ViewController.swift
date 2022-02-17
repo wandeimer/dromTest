@@ -60,7 +60,12 @@ class ViewController : UIViewController {
     private func refreshList(){
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // add delay
             
+            // clean cache
+            self.networker.cleanCache()
+            
+            // add all links to array again
             self.linkList = self.linkListObject.linkList
+            
             // refresh Collection View
             self.myCollectionView?.reloadData()
             

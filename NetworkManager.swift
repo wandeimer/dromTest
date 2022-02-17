@@ -24,6 +24,11 @@ class NetworkManager{
       session = URLSession(configuration: config)
     }
     
+    // MARK: clean cache
+    func cleanCache(){
+        images.removeAllObjects()
+    }
+    
     func download(imageURL: URL, completion: @escaping (Data?, Error?) -> (Void)) {
         
         // MARK: check "is we have cached image data for this url"
